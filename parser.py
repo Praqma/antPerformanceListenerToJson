@@ -3,9 +3,9 @@
 import re
 import sys
 import json
+import time
 import argparse
 import logging as log
-
 
 def to_json(lines):
     out = []
@@ -20,7 +20,7 @@ def to_json(lines):
             # We are not that interested in the summary line that matches regex
             if match.group(1) == "Total time":
                 continue
-            out.append({"name": match.group(1), "duration": match.group(2)})
+            out.append({"task_name": match.group(1), "duration": match.group(2)})
         elif match and len(match.groups()) != 2:
             log.warn("Unexpected match for line: {}; matched groups: {}".format(line,
                                                                                 match.groups()))
@@ -28,10 +28,12 @@ def to_json(lines):
 
 def format_for_elk(input_json, index, element_type):
     out = []
+    now = int(round(time.time() * 1000))
     for entry in json.loads(input_json):
         out.append(json.dumps({"index":{"_index":index,"_type":element_type}}))
         # Convert seconds to miliseconds since ELK expects miliseconds
         entry["duration"] = int(float(entry["duration"])*1000)
+        entry["timestamp"] = now
         out.append(json.dumps(entry))
     return "\n".join(out)
 
@@ -47,7 +49,7 @@ def parse_args(argv):
     subparsers = parser.add_subparsers(help="You can generate either plain json or one preformated to be loaded to ELK")
     parser_json = subparsers.add_parser("json", help="Format output as plain json")
     parser_elk = subparsers.add_parser("elk", help="Format output for uploading to ELK")
-    parser_elk.add_argument("-n", "--index", help="Index name, AntProfiler if not specified", dest="index", default="AntProfiler")
+    parser_elk.add_argument("-n", "--index", help="Index name, antprofiler if not specified", dest="index", default="antprofiler")
     parser_elk.add_argument("-t", "--type", help="Type name, record if not specified", dest="type", default="record")
 
     return parser.parse_args()
