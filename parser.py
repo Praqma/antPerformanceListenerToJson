@@ -17,9 +17,6 @@ def to_json(lines):
             log.debug("Extracted task name:{} and time:{} from line: {}".format(match.group(1),
                                                                                 match.group(2),
                                                                                 line.rstrip("\n")))
-            # We are not that interested in the summary line that matches regex
-            if match.group(1) == "Total time":
-                continue
             out.append({"task_name": match.group(1), "duration": match.group(2)})
         elif match and len(match.groups()) != 2:
             log.warn("Unexpected match for line: {}; matched groups: {}".format(line,
