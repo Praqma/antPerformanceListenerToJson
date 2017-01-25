@@ -11,18 +11,5 @@ then
   exit 1
 fi
 
-curl -XPUT http://${IP}:9200/${INDEX} -d '
-{
- "mappings" : {
-  "_default_" : {
-   "properties" : {
-    "task_name" : {"type": "string" },
-    "duration" : { "type" : "integer" },
-    "timestamp" : { "type" : "date" }
-   }
-  }
- }
-}
-';
-
+curl -XPUT http://${IP}:9200/${INDEX} --data-binary @mappings.json
 curl -XPOST "${IP}:9200/${INDEX}/_bulk?pretty" --data-binary @${FILE}
