@@ -1,0 +1,11 @@
+{
+ "mappings" : {
+  "_default_" : {
+   "properties" : {
+    "task_name" : {"type": "string" },
+    "duration" : { "type" : "integer" },
+    "timestamp" : { "type" : "date" }
+   }
+  }
+ }
+}
