@@ -35,7 +35,7 @@ def format_for_elk(input_json, index):
         entry["duration"] = int(float(entry["duration"])*1000)
         entry["timestamp"] = now
         out.append(json.dumps(entry))
-    return "\n".join(out)
+    return "\n".join(out) + "\n"
 
 def parse_args(argv):
     parser = argparse.ArgumentParser()
