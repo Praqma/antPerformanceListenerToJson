@@ -26,11 +26,11 @@ def to_json(lines):
                                                                                 match.groups()))
     return json.dumps(out, sort_keys=True, indent=2)
 
-def format_for_elk(input_json, index, element_type):
+def format_for_elk(input_json, index):
     out = []
     now = int(round(time.time() * 1000))
     for entry in json.loads(input_json):
-        out.append(json.dumps({"index":{"_index":index,"_type":element_type}}))
+        out.append(json.dumps({"index":{"_index":index,"_type":entry["task_name"].replace(" ", "").replace(".", "-").lower()}}))
         # Convert seconds to miliseconds since ELK expects miliseconds
         entry["duration"] = int(float(entry["duration"])*1000)
         entry["timestamp"] = now
@@ -50,7 +50,6 @@ def parse_args(argv):
     parser_json = subparsers.add_parser("json", help="Format output as plain json")
     parser_elk = subparsers.add_parser("elk", help="Format output for uploading to ELK")
     parser_elk.add_argument("-n", "--index", help="Index name, antprofiler if not specified", dest="index", default="antprofiler")
-    parser_elk.add_argument("-t", "--type", help="Type name, record if not specified", dest="type", default="record")
 
     return parser.parse_args()
 
@@ -65,11 +64,11 @@ def main(argv):
 
     with open(args.output, 'w') as outfile, open(args.input, 'r') as infile:
         result = to_json(infile)
-        # if elk was specified then we will index and type as part of namespace object
+        # if elk was specified then we will index as part of namespace object
         # which make them suituable for checking if elk was mentioned since there is not flag for elk itself 
         if "index" in args:
             log.info("Formating for ELK...")
-            result = format_for_elk(result, args.index, args.type)
+            result = format_for_elk(result, args.index)
         log.info("Writing results to {}".format(args.output))
         outfile.write(result)
     log.info("Done!")

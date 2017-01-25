@@ -3,8 +3,7 @@
 IP=$1
 FILE=$2
 INDEX=${3:-antprofiler}
-TYPE=${4:-record}
-MESSAGE="Please run the command as follow: ${0} <elk ip> <file with data to upload> <index name, optional, default:AntProfiler> <type name, optional, default: record>"
+MESSAGE="Please run the command as follow: ${0} <elk ip> <file with data to upload> <index name, optional, default:AntProfiler>"
 
 if [ -z "${IP}" ] || [ -z "${FILE}" ]
 then
